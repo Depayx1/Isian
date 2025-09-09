@@ -1,26 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="box">
-    <div class="login">
-      <form class="loginBx" action="success.html" method="post">
-        <h2><i>Register</i></h2>
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
-        <input type="submit" value="Register">
-        <div class="group">
-          <a href="login.html">Already have an account?</a>
-        </div>
-      </form>
-    </div>
-  </div>
-</body>
-</html>
+<?php
+include "db.php";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $conn->real_escape_string($_POST["username"]);
+    $email = $conn->real_escape_string($_POST["email"]);
+    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
+
+    $check = $conn->query("SELECT * FROM users WHERE username='$username' OR email='$email'");
+    if ($check->num_rows > 0) {
+        echo "<script>alert('Username atau email sudah digunakan!'); window.location='register.html';</script>";
+    } else {
+        $sql = "INSERT INTO users (username, email, password) VALUES ('$username','$email','$password')";
+        if ($conn->query($sql) === TRUE) {
+            echo "<script>alert('Registrasi berhasil, silakan login!'); window.location='login.html';</script>";
+        } else {
+            echo "Error: " . $conn->error;
+        }
+    }
+}
+?>
